@@ -8,11 +8,12 @@ require('dotenv').config();
 
 const middlewares = require('./middlewares');
 const logs = require('./api/logs');
-const credentials = require('./api/credentials');
+// const credentials = require('./api/credentials');
+// const updateDB = require('./api/updateDB');
 
 const app = express();
 
-mongoose.connect(process.env.DATABASE_URL, {
+mongoose.connect("mongodb+srv://Brewmaster123:primalsplit@wardrobedbsd2.gbx59.mongodb.net/WardrobeDBSD2?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -31,7 +32,8 @@ app.get('/', (res, req) => {
 });
 
 app.use('/api/logs', logs);
-app.use('/api/credentials', credentials);
+// app.use('/api/credentials', credentials);
+// app.use('/api/updateDB', updateDB);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

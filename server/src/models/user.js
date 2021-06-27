@@ -1,5 +1,5 @@
-import wardrobeSchema from './wardrobe';
-import mongoose from 'mongoose';
+//import wardrobeSchema from './wardrobe';
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const requiredString = {
@@ -13,13 +13,13 @@ const emailData = {
 }
 
 const securityData = {
-    password: { requiredString, minLength: 8, hide: true },
-    securityQuestion1: requiredString,
-    securityQuestion1Answer: requiredString,
-    securityQuestion2: requiredString,
-    securityQuestion2Answer: requiredString,
-    securityQuestion3: requiredString,
-    securityQuestion3Answer: requiredString,
+    password: { requiredString},
+    securityQuestion1: { type: Number, default: 0 },
+    securityQuestion1Answer: { type: Number, default: 0 },
+    securityQuestion2: { type: Number, default: 0 },
+    securityQuestion2Answer: { type: Number, default: 0 },
+    securityQuestion3: { type: Number, default: 0 },
+    securityQuestion3Answer: { type: Number, default: 0 },
 }
 
 const articleData = {
@@ -28,7 +28,7 @@ const articleData = {
     timesUsed: { type: Number, default: 0 },
     color: { type: String, default: null },
     type: { type: String, required: true, default: null },
-    timestamps: true,
+    //timestamps: true,
 }
 
 const wardrobeData = {
@@ -42,15 +42,15 @@ const wardrobeSchema = {
     wardrobeNumber: { type: Number, defualt: null }, // String is shorthand for {type: String}
     location: { type: String, default: null },
     wardrobeData: [wardrobeData],
-    timestamps: true,
+    //timestamps: true,
 };
 
 const usersSchema = new Schema({
     fullName: requiredString, // String is shorthand for {type: String}
     email: [emailData],
     security: [securityData],
-    timestamps: true,
     wardrobe: [wardrobeSchema],
+    //timestamps: true,
 });
 
 module.exports = mongoose.model('users', usersSchema);
