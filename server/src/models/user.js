@@ -8,12 +8,12 @@ const requiredString = {
 }
 
 const emailData = {
-    primaryEmail: requiredString,
+    primaryEmail:requiredString,
     secondaryEmail: { type: String, default: null },
 }
 
 const securityData = {
-    password: { requiredString},
+    password: {type: String},
     securityQuestion1: { type: Number, default: 0 },
     securityQuestion1Answer: { type: Number, default: 0 },
     securityQuestion2: { type: Number, default: 0 },
@@ -28,28 +28,20 @@ const articleData = {
     timesUsed: { type: Number, default: 0 },
     color: { type: String, default: null },
     type: { type: String, required: true, default: null },
-    //timestamps: true,
 }
-
 const wardrobeData = {
-    articleData: [articleData],
+    wardrobeID: { type: String },
+    location: { type: String, default: null },
     totalNumberOfArticles: { type: Number, default: 0 },
     totalNumberOfShirts: { type: Number, default: 0 },
     totalNumberOfPants: { type: Number, default: 0 },
+    articleData: [articleData],
 }
-
-const wardrobeSchema = {
-    wardrobeNumber: { type: Number, defualt: null }, // String is shorthand for {type: String}
-    location: { type: String, default: null },
-    wardrobeData: [wardrobeData],
-    //timestamps: true,
-};
-
 const usersSchema = new Schema({
     fullName: requiredString, // String is shorthand for {type: String}
     email: [emailData],
     security: [securityData],
-    wardrobe: [wardrobeSchema],
+    wardrobe: [wardrobeData],
     //timestamps: true,
 });
 
