@@ -1,4 +1,4 @@
-const { router } = require('express');
+const { Router } = require('express');
 
 const UserEntry = require("../models/user");
 
@@ -6,30 +6,31 @@ const router = Router();
 
 router.get('/', async(req, res, next) => {
     try {
-        console.log('Getting Credentials');
+        console.log(' Getting user Information');
         const loginEntry = new UserEntry(req.body);
         const credentialCheck = await UserEntry.findOne({
             // I have to test to find the right index, probably email[0].primary email
-            email: loginEntry.emailData.primaryEmail,
+            "email.primaryEmail": loginEntry.email[0].primaryEmail,
+            "security.password": loginEntry.security[0].password
         });
-        if (!(credentialCheck)) {
+        if (credentialCheck != null) {
             res.status(400);
             var error = 'User does not exist';
             next(error);
-            // Unhash passoword
-        } else if (credentialCheck[0].security.password != loginEntry.security.password) {
-            res.status(400);
-            var error = 'Passoword does not match';
-            next(error);
-        } else {
-            //Check If ID is getting returned
-            console.log('Returning User Info')
-            var logInInfo = {
-                fullName = credentialCheck[0].fullName,
-                email = credentialCheck[0].emailData.primaryEmail,
-            }
-            res.status(200).json(logInInfo);
         }
+        // Unhash passoword
+        bcrypt.compare(loginEntry.security[0].password, createdEntry.security[0].password, function(err, result) {
+            // returns result
+            if (result) {
+                console.log("It matches!");
+                res.status(200).json(credentialCheck);
+            } else {
+                var error = 'Invalid password!';
+                console.log(error);
+                res.status(400);
+                next(error);
+            }
+        });
     } catch (error) {
         if (error.name === 'Validation Error') {
             res.status(422);
@@ -40,23 +41,29 @@ router.get('/', async(req, res, next) => {
 
 router.post('/register', async(req, res, next) => {
     try {
-        console.log('Regeistering new user');
         const createdEntry = new UserEntry(req.body);
         const credentialCheck = await UserEntry.findOne({
             // I have to test to find the right index, probably email[0].primary email
-            email: createdEntry.emailData.primaryEmail,
+            "email.primaryEmail": createdEntry.email[0].primaryEmail
         });
-        if (credentialCheck) {
-            res.status(400);
+        if (credentialCheck != null) {
             var error = 'User already exist';
+            console.log(error);
+            res.status(400);
             next(error);
         } else {
-            var passwordHash = createdEntry.security.password;
+            console.log('Regeistering new user');
+            bcrypt.genSalt(saltRounds, function(err, salt) {
+                bcrypt.hash(createdEntry.security[0].password, salt, function(err, hash) {
+                    // Store hash in your password DB.
+                    var passwordHash = hash;
+                });
+            });
             var userInstance = new UserEntry({
                 fullName: createdEntry.fullName,
-                emailData: [{
-                    primaryEmail: createdEntry.emailData.primaryEmail,
-                    secondaryEmail: createdEntry.emailData.secondaryEmail,
+                email: [{
+                    primaryEmail: createdEntry.email[0].primaryEmail,
+                    secondaryEmail: createdEntry.email[0].secondaryEmail,
                 }],
                 security: [{
                     password: passwordHash,
@@ -70,7 +77,12 @@ router.post('/register', async(req, res, next) => {
             });
             try {
                 await userInstance.save();
-                console.log(userInstance.fullName + 'has been succesfully added to the database');
+                var result = userInstance.fullName + ' has been succesfully added to the database'
+                console.log(result);
+                var ret = {
+                    result: result,
+                }
+                res.status(200).json(ret);
             } catch (error) {
                 next(error)
             }
@@ -79,8 +91,7 @@ router.post('/register', async(req, res, next) => {
         next(error);
     }
 });
-
-//router.post('/changePassword', async(req, res, next) => {});
-//router.post('/forgotPassword', async(req, res, next) => {});
+router.post('/changePassword', async(req, res, next) => {});
+router.post('/forgotPassword', async(req, res, next) => {});
 
 module.exports = router;
