@@ -13,22 +13,21 @@ function updateNumberOfArticles(id_, wardrobeid_, articleEntry, type, arithmatic
     }
 
     await UserEntry.findOneAndUpdate({
-            'id_': id_,
-            'wardrobeData.id': wardrobeid_
-        }, {
-            $push: {
-                'wardrobeData.totalNumberOfShirts': updatedTotalNumberOfShirts,
-                'wardrobeData.totalNumberOfPants': updatedTotalNumberOfPants,
-                'wardrobeData.totalNumberOfArticles': updatedTotalNumberOfPants + updatedTotalNumberOfShirts,
-            }
-        }),
-        function(err, docs) {
-            if (err) {
-                next(err);
-            } else {
-                console.log('Updated Article Numbers: ' + docs);
-            }
-        };
+        'id_': id_,
+        'wardrobeData.id': wardrobeid_
+    }, {
+        $push: {
+            'wardrobeData.totalNumberOfShirts': updatedTotalNumberOfShirts,
+            'wardrobeData.totalNumberOfPants': updatedTotalNumberOfPants,
+            'wardrobeData.totalNumberOfArticles': updatedTotalNumberOfPants + updatedTotalNumberOfShirts,
+        }
+    }).exec(function(err, docs) {
+        if (err) {
+            next(err);
+        } else {
+            console.log('Updated Article Numbers: ' + docs);
+        }
+    })
 }
 module.exports = {
     updateNumberOfArticles

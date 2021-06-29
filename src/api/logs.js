@@ -13,6 +13,31 @@ router.get('/', async(req, res, next) => {
     }
 });
 
+router.get('/getSpecificWardrobe', async(req, res, next) => {
+    try {
+        const {
+            id_,
+            wardrobeid_,
+        } = req.body;
+        const articleEntry = await UserEntry.find({
+            'id_': id_,
+            'wardrobeData.id': wardrobeid_,
+        }).exec(function(err, docs) {
+            if (err) {
+                next(err);
+            } else {
+                console.log('User Wardobe: ' + docs.wardrobeData);
+            }
+        })
+    } catch (error) {
+        res.status(422);
+        next(error);
+    }
+});
+
+
+// https://stackoverflow.com/questions/5830513/how-do-i-limit-the-number-of-returned-items
+
 router.post('/', async(req, res, next) => {
     try {
         console.log(req.body);

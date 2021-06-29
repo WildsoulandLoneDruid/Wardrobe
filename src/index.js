@@ -11,7 +11,7 @@ const saltRounds = 10;
 const middlewares = require('./middlewares');
 const logs = require('./api/logs');
 const credentials = require('./api/credentials');
-// const updateDB = require('./api/updateDB');
+const updateDB = require('./api/updateDB');
 
 const app = express();
 
