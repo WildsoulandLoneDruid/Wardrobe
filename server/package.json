@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev" : "nodemon src/index.js",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "heroku-postbuild": "cd new_frontend && npm install && npm run build"
   },
   "keywords": [],
   "author": "",
