@@ -8,17 +8,17 @@ const util = require('./util');
 
 router.post('/addWardrobe', async(req, res, next) => {
     try {
-        /* 'id_' : ''*/
+        /* '_id' : ''*/
         const {
-            id_,
-            wardrobeid_,
+            _id,
+            wardrobe_id,
             fullName,
             location,
         } = req.body;
         console.log('Adding Wardrobe to User: ' + fullName);
         await UserEntry.findOneAndUpdate({
-                'id_': id_,
-                'wardrobeData.id': wardrobeid_
+                '_id': _id,
+                'wardrobeData._id': wardrobe_id
             }, {
                 $push: {
                     // I Need to work on this
@@ -41,16 +41,16 @@ router.post('/addWardrobe', async(req, res, next) => {
 });
 router.post('/deleteWardrobe', async(req, res, next) => {
     try {
-        /* 'id_' : ''*/
+        /* '_id' : ''*/
         const {
-            id_,
-            wardrobeid_,
+            _id,
+            wardrobe_id,
             fullName,
         } = req.body;
         console.log('Deleting Wardrobe to User: ' + fullName);
         await UserEntry.findOneAndDelete({
-            'id_': id_,
-            'wardrobeData.id': wardrobeid_
+            '_id': _id,
+            'wardrobeData._id': wardrobe_id
         }).exec(function(err, docs) {
             if (err) {
                 next(err);
@@ -68,15 +68,15 @@ router.post('/deleteWardrobe', async(req, res, next) => {
 router.post('/updateWardrobe', async(req, res, next) => {
     try {
         const {
-            id_,
-            wardrobeid_,
+            _id,
+            wardrobe_id,
             fullName,
             location,
         } = req.body;
         console.log('Adding Wardrobe to User: ' + fullName);
         await UserEntry.findOneAndUpdate({
-            'id_': id_,
-            'wardrobeData.id': wardrobeid_
+            '_id': _id,
+            'wardrobeData._id': wardrobe_id
         }, {
             $set: {
                 'wardrobeData.location': location
@@ -97,33 +97,34 @@ router.post('/updateWardrobe', async(req, res, next) => {
 });
 router.post('/addArticle', async(req, res, next) => {
     try {
-        /* 'id_' : ''*/
+        /* '_id' : ''*/
         const {
-            id_,
-            wardrobeid_,
+            _id,
+            wardrobe_id,
             fullName,
             RFID,
             color,
             type
         } = req.body;
         console.log('Adding Article to User:' + fullName);
+        var update = util.updateNumberOfArticles(articleCheck, type, 1);
         const articleEntry = await UserEntry.findOneAndUpdate({
-            'id_': id_,
-            'wardrobeData.id': wardrobeid_
+            '_id': _id,
+            'wardrobeData._id': wardrobe_id
         }, {
             $push: {
-                // I Need to work on this
                 'wardrobeData.articleData.RFID': RFID,
                 'wardrobeData.articleData.color': color,
                 'wardrobeData.articleData.type': type,
+                'wardrobeData.totalNumberOfShirts': update.updateNumberOfShirts,
+                'wardrobeData.totalNumberOfPants': update.totalNumberofPants,
+                'wardrobeData.totalNumberOfArticles': update.totalNumberofPants + update.totalNumberofShirts,
             }
         }, upsert).exec(function(err, docs) {
             if (err) {
                 next(err);
             } else {
                 console.log('Added Article Wardobe: ' + docs.wardrobeData.articleData);
-                //updatecount
-                util.updateNumberOfArticles(id_, wardrobeid_, articleEntry, type, 1);
             }
         })
     } catch (error) {
@@ -136,25 +137,44 @@ router.post('/addArticle', async(req, res, next) => {
 
 router.post('/removeArticle', async(req, res, next) => {
     try {
-        /* 'id_' : ''*/
+        /* '_id' : ''*/
         const {
-            id_,
-            wardrobeid_,
+            _id,
+            wardrobe_id,
             fullName,
             RFID,
         } = req.body;
         console.log('Removing Article to User:' + fullName);
-        const articleEntry = await UserEntry.findOneAndDelete({
-            'id_': id_,
-            'wardrobeData.id': wardrobeid_,
+        const articleCheck = await UserEntry.find({
+            '_id': _id,
+            'wardrobeData._id': wardrobe_id
+        });
+        var update = util.updateNumberOfArticles(articleCheck, type, 0);
+        await UserEntry.findOneAndUpdate({
+            '_id': _id,
+            'wardrobeData._id': wardrobe_id,
+        }, {
+            $set: {
+                'wardrobeData.totalNumberOfShirts': update.updateNumberOfShirts,
+                'wardrobeData.totalNumberOfPants': update.totalNumberofPants,
+                'wardrobeData.totalNumberOfArticles': update.totalNumberofPants + update.totalNumberofShirts,
+            }
+        }).exec(function(err, docs) {
+            if (err) {
+                next(err);
+            } else {
+                console.log('Updated Article Wardobe: ' + docs.wardrobeData.articleData);
+            }
+        })
+        await UserEntry.findOneAndDelete({
+            '_id': _id,
+            'wardrobeData._id': wardrobe_id,
             'RFID': RFID
         }).exec(function(err, docs) {
             if (err) {
                 next(err);
             } else {
                 console.log('Removed Article Wardobe: ' + docs.wardrobeData.articleData);
-                //updatecount
-                util.updateNumberOfArticles(id_, wardrobeid_, articleEntry, type, 0);
             }
         })
     } catch (error) {
@@ -167,10 +187,10 @@ router.post('/removeArticle', async(req, res, next) => {
 //WOKRINGHERE
 router.post('/UpdateArticle', async(req, res, next) => {
     try {
-        /* 'id_' : ''*/
+        /* '_id' : ''*/
         const {
-            id_,
-            wardrobeid_,
+            _id,
+            wardrobe_id,
             fullName,
             RFID,
             color,
@@ -178,8 +198,8 @@ router.post('/UpdateArticle', async(req, res, next) => {
         } = req.body;
         console.log('Updating Article to User:' + fullName);
         await UserEntry.findOneAndUpdate({
-            'id_': id_,
-            'wardrobeData.id': wardrobeid_,
+            '_id': _id,
+            'wardrobeData._id': wardrobe_id,
             'RFID': RFID
         }, {
             $set: {
@@ -193,7 +213,7 @@ router.post('/UpdateArticle', async(req, res, next) => {
             } else {
                 console.log('Updated Article Wardobe: ' + docs.wardrobeData.articleData);
             }
-        })
+        });
     } catch (error) {
         if (error.name === 'Validation Error') {
             res.status(422);
@@ -205,15 +225,15 @@ router.post('/UpdateArticle', async(req, res, next) => {
 router.post('/UpdateTimesUsed', async(req, res, next) => {
     try {
         const {
-            id_,
-            wardrobeid_,
+            _id,
+            wardrobe_id,
             fullName,
             RFID,
         } = req.body;
         console.log('Updating Time Used Article to User:' + fullName + 'and article' + RFID);
         const articleEntry = await UserEntry.findOneAndUpdate({
-                'id_': id_,
-                'wardrobeData.id': wardrobeid_,
+                '_id': _id,
+                'wardrobeData._id': wardrobe_id,
                 'RFID': RFID
             }, {
                 $set: {
