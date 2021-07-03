@@ -2,9 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node app.js",
     "dev" : "nodemon src/index.js",
     "lint": "eslint src/",
     "heroku-postbuild": "cd new_frontend && npm install && npm run build"
@@ -12,6 +12,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "16.1.0"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
