@@ -26,7 +26,6 @@
     "nodemailer": "^6.4.10"
   },
   "devDependencies": {
-    "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",

@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 
 require('dotenv').config();
 const saltRounds = 10;
-
+//fuck this 
 const middlewares = require('./middlewares');
 const logs = require('./api/logs');
 const credentials = require('./api/credentials');
