@@ -35,7 +35,7 @@ app.get('/', (res, req) => {
 
 app.use('/api/logs', logs);
 app.use('/api/credentials', credentials);
-// app.use('/api/updateDB', updateDB);
+app.use('/api/updateDB', updateDB);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
